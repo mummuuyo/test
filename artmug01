@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mummu Live2D Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        /* --- Font Settings --- */
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-1Thin.woff2') format('woff2'); font-weight: 100; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-2ExtraLight.woff2') format('woff2'); font-weight: 200; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-3Light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-5Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-6SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2'); font-weight: 800; font-display: swap; }
+        @font-face { font-family: 'Paperozi'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-9Black.woff2') format('woff2'); font-weight: 900; font-display: swap; }
+
+        :root {
+            --bg-black: #0a0a0a;
+            --bg-dark-grey: #1a1a1a;
+            --bg-light-grey: #f5f5f5;
+            --text-white: #ffffff;
+            --text-grey: #888888;
+            --accent-white: #ffffff;
+            --border-color: #333333;
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Paperozi', sans-serif; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-black); color: var(--text-white); line-height: 1.6; overflow-x: hidden; position: relative; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 120px 0; border-bottom: 1px solid var(--border-color); }
+
+        nav { 
+            position: absolute; 
+            top: 0;
+            left: 0;
+            width: 100%; 
+            background: rgba(10, 10, 10, 0.95); 
+            backdrop-filter: blur(10px);
+            z-index: 1000; 
+            border-bottom: 1px solid var(--border-color);
+            transition: none; /* 버벅임 방지: 애니메이션 제거 */
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; height: 70px; }
+        .logo { font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; }
+        .version-tag { font-size: 0.7rem; font-weight: 400; opacity: 0.4; margin-left: 8px; vertical-align: middle; }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { 
+            color: var(--text-grey); 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            font-weight: 500; 
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .nav-links a:hover { color: var(--accent-white); }
+
+        /* --- 1. Intro --- */
+        #intro { text-align: center; padding-top: 100px; background: #ffffff; color: #000000; }
+        .profile-img { width: 170px; height: 170px; border-radius: 50%; object-fit: cover; border: 5px solid #f0f0f0; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .intro-text h1 { font-size: 3rem; font-weight: 900; margin-bottom: 10px; color: #000; }
+        .intro-text p { color: #555; font-size: 1.2rem; font-weight: 500; }
+
+        /* --- 2. Portfolio --- */
+        #portfolio { background-color: var(--bg-black); position: relative; }
+        .category-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 50px; }
+        .tab-btn { background: none; border: 1px solid var(--border-color); color: var(--text-grey); padding: 10px 25px; cursor: pointer; border-radius: 50px; transition: var(--transition); font-weight: 500; }
+        .tab-btn.active { background: var(--accent-white); color: var(--bg-black); border-color: var(--accent-white); }
+
+        .slider-outer { position: relative; width: 100%; max-width: 1200px; margin: 0 auto; }
+        .swiper { width: 100%; padding-bottom: 50px !important; }
+        
+        .portfolio-card { width: 100%; background: #ffffff; border-radius: 15px; overflow: hidden; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
+        .portfolio-card:hover { transform: translateY(-5px); border-color: #fff; }
+        .thumb-wrapper { width: 100%; padding-top: 56.25%; position: relative; background: #000; }
+        .thumb-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); opacity: 0; transition: 0.3s; }
+        .portfolio-card:hover .play-overlay { opacity: 1; }
+        .play-overlay i { font-size: 3rem; color: #fff; }
+        
+        .card-info { padding: 20px 15px; text-align: center; background: #ffffff; color: #000000; }
+        .card-info h3 { font-size: 1rem; font-weight: 800; margin-bottom: 8px; color: #000; }
+        .card-info p { 
+            font-size: 0.8rem; 
+            color: #666; 
+            font-weight: 500; 
+            white-space: pre-wrap; 
+            height: 2.6em;         
+            overflow: hidden;      
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+            border: 1px solid var(--border-color); color: white !important;
+            width: 50px !important; height: 50px !important; border-radius: 50%;
+            top: 40% !important; z-index: 10; transition: 0.3s;
+        }
+        .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px !important; font-weight: bold; }
+        .swiper-button-next:hover, .swiper-button-prev:hover { background: white; color: black !important; }
+        .swiper-pagination-bullet { background: #555 !important; opacity: 1; }
+        .swiper-pagination-bullet-active { background: white !important; }
+
+        /* --- GIF Detail --- */
+        #gifdetail { background-color: var(--bg-black); }
+        .gif-group { margin-bottom: 50px; padding-top: 10px; }
+        .gif-group:last-child { margin-bottom: 0; }
+        .gif-subtitle { font-size: 2.8rem; font-weight: 600; margin-bottom: 20px; text-align: center; color: #eee; line-height: 1; }
+        .gif-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .gif-card { background: #1a1a1a; border: 1px solid #333; border-radius: 15px; overflow: hidden; transition: 0.3s; }
+        .gif-card:hover { transform: translateY(-5px); border-color: #fff; }
+        .gif-media { width: 100%; aspect-ratio: 1/1; background: #000; display: flex; align-items: center; justify-content: center; color: #555; font-size: 0.8rem; }
+        .gif-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .gif-desc { padding: 15px; text-align: center; font-size: 0.85rem; color: #000; background: #fff; font-weight: 500; line-height: 1.4; }
+
+        /* 스켈레톤 로딩 스타일 */
+        .port-skeleton { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .skel-bar.dark { background: #1a1a1a; border-radius: 15px; animation: pulse 1.5s infinite ease-in-out; }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
+
+        /* --- Video Modal --- */
+        #videoModal { 
+            display: none; 
+            position: absolute; 
+            left: 0; 
+            width: 100%; 
+            padding: 60px 0; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 2000; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .modal-body { width: 90%; max-width: 900px; aspect-ratio: 16/9; position: relative; }
+        .close-modal { position: absolute; top: -50px; right: 0; color: #fff; font-size: 2.5rem; cursor: pointer; }
+
+        /* --- Guidelines --- */
+        #guidelines { background-color: var(--bg-light-grey); color: var(--bg-black); }
+        #guidelines h2 { color: var(--bg-black); font-size: 2.5rem; font-weight: 800; text-align: center; margin-bottom: 60px; }
+        .guide-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        .guide-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .guide-box h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; color: black; border-left: 4px solid black; padding-left: 15px; }
+        .guide-box ul { list-style: none; }
+        .guide-box li { margin-bottom: 10px; font-size: 0.95rem; color: #444; padding-left: 20px; position: relative; }
+        .guide-box li::before { content: "•"; position: absolute; left: 0; color: black; font-weight: bold; }
+        .guide-box.dark { background: black; color: white; grid-column: span 2; }
+        .guide-box.dark h3 { color: white; border-color: white; }
+        .guide-box.dark li { color: #ccc; }
+        .guide-box.dark li::before { color: white; }
+
+        /* --- 3. Process --- */
+        #process { background-color: var(--bg-black); text-align: center; }
+        .process-flow { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: nowrap; margin-top: 50px; }
+        .process-item { 
+            background: #1a1a1a; border: 1px solid #333; border-radius: 15px; padding: 20px 10px;
+            flex: 1; min-width: 0; max-width: 130px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .process-item:hover { background: #222; border-color: #fff; transform: translateY(-5px); }
+        .process-arrow { display: flex; align-items: center; justify-content: center; color: #444; font-size: 0.8rem; }
+        .step-icon { font-size: 1.5rem; display: block; margin-bottom: 10px; }
+        .step-txt { font-weight: 800; font-size: 0.75rem; letter-spacing: -0.5px; color: #eee; white-space: nowrap; }
+
+        /* --- Quotation & Form Section --- */
+        #options { background-color: var(--bg-dark-grey); border-bottom: none; }
+        .form-card { background: white; color: black; padding: 0; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
+        .step-header { display: flex; border-bottom: 1px solid #eee; background: #fafafa; }
+        .step-tab { flex: 1; text-align: center; padding: 20px; font-weight: 800; color: #bbb; transition: 0.3s; font-size: 1rem; cursor: pointer; }
+        .step-tab.active { color: black; border-bottom: 4px solid black; background: white; }
+
+        .quote-content, .form-content { padding: 40px; }
+        
+        .fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quote-category-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; padding: 0 10px; }
+        .q-cat-btn { background: #f0f0f0; border: 1px solid #ddd; padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: 0.3s; color: #666; }
+        .q-cat-btn.active { background: #000; color: #fff; border-color: #000; }
+
+        .quote-slider-wrap { position: relative; display: flex; align-items: flex-start; justify-content: center; min-height: 520px; padding: 0 40px; }
+        .category-page { display: none; width: 100%; }
+        .category-page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .table-head { display: grid; grid-template-columns: 2fr 1fr 1fr; font-weight: 900; background: #f5f5f5; border-radius: 10px; padding: 12px 10px; font-size: 0.85rem; margin-bottom: 10px; }
+        .table-head div:nth-child(1) { text-align: left; padding-left: 10px; }
+        .table-head div:nth-child(2) { text-align: right; padding-right: 15px; }
+        .table-head div:nth-child(3) { text-align: center; }
+
+        .table-row { display: grid; grid-template-columns: 2fr 1fr 1fr; border-bottom: 1px solid #eee; padding: 15px 10px; align-items: flex-start; transition: 0.2s; }
+        .table-row:hover { background: #fafafa; }
+        .item-label-group { display: flex; flex-direction: column; text-align: left; }
+        .item-label { font-weight: 800; font-size: 0.9rem; }
+        .item-desc { font-size: 0.75rem; color: #888; font-weight: 400; margin-top: 2px; }
+        .item-price-tag { font-size: 0.85rem; font-weight: 600; color: #444; text-align: right; padding-right: 15px; }
+        .input-qty { width: 100%; max-width: 70px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; text-align: center; font-size: 0.9rem; margin: 0 auto; display: block; }
+        
+        .quote-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: #eee; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; z-index: 5; }
+        .quote-nav-btn:hover { background: #000; color: #fff; }
+        .q-prev { left: -10px; } .q-next { right: -10px; }
+        .page-indicator { text-align: center; margin-top: 20px; font-size: 0.85rem; font-weight: 800; color: #aaa; }
+
+        .total-container { background: #000; color: #fff; padding: 25px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; margin-top: 30px; }
+        .total-label { font-size: 1.1rem; font-weight: 800; }
+        .total-amount { font-size: 1.6rem; font-weight: 900; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 25px; width: 100%; }
+        .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .input-group label { font-size: 0.85rem; font-weight: 800; color: #000; display: block; text-align: left; }
+        .input-group input, .input-group textarea { 
+            width: 100%; background: #f9f9f9; border: 1px solid #ddd; 
+            padding: 12px 15px; border-radius: 10px; outline: none; 
+            font-size: 0.9rem; transition: var(--transition);
+        }
+        .input-group input:focus, .input-group textarea:focus { border-color: black; background: #fff; }
+        .input-group textarea { resize: none; overflow-y: auto; height: 120px; }
+
+        .btn-action { width: 100%; margin-top: 30px; padding: 18px; background: black; color: white; border: none; font-weight: 800; border-radius: 12px; cursor: pointer; transition: var(--transition); font-size: 1rem; }
+        .btn-action:hover { background: #333; transform: translateY(-2px); }
+
+        @media (max-width: 900px) {
+            section { padding: 70px 0; }
+            .nav-inner { flex-direction: column; height: auto; padding: 15px 0; gap: 15px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 12px; }
+            .nav-links a { font-size: 0.85rem; }
+            .profile-img { width: 130px; height: 130px; margin-bottom: 20px; }
+            .intro-text h1 { font-size: 2.2rem; }
+            .intro-text p { font-size: 1rem; }
+            #guidelines h2, #process h2, #portfolio h2, #gifdetail h2 { font-size: 2rem !important; margin-bottom: 30px !important; }
+            .guide-grid { grid-template-columns: 1fr; gap: 15px; }
+            .guide-box { padding: 25px; }
+            .guide-box.dark { grid-column: 1 / -1; }
+            .gif-grid { grid-template-columns: 1fr; }
+            .swiper-button-next, .swiper-button-prev { width: 40px !important; height: 40px !important; }
+            .swiper-button-next:after, .swiper-button-prev:after { font-size: 14px !important; }
+            .process-flow { flex-wrap: wrap; gap: 10px; }
+            .process-item { min-width: calc(50% - 10px); flex: 1 1 auto; padding: 15px 5px; }
+            .process-arrow { display: none; }
+            .step-header { flex-direction: column; }
+            .step-tab { padding: 15px; font-size: 0.95rem; }
+            .quote-content, .form-content { padding: 20px 15px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .quote-category-nav { gap: 5px; }
+            .q-cat-btn { padding: 6px 12px; font-size: 0.75rem; }
+            .quote-slider-wrap { padding: 0 20px; min-height: 550px; }
+            .quote-nav-btn { width: 32px; height: 32px; background: rgba(0,0,0,0.05); }
+            .q-prev { left: -5px; } 
+            .q-next { right: -5px; }
+            .table-head, .table-row { grid-template-columns: 1.8fr 1fr 0.8fr; gap: 5px; padding: 12px 5px; }
+            .table-head div:nth-child(2) { text-align: center; padding-right: 0; }
+            .item-label { font-size: 0.85rem; word-break: keep-all; }
+            .item-desc { font-size: 0.7rem; }
+            .item-price-tag { font-size: 0.8rem; padding-right: 0; text-align: center; margin: auto 0; }
+            .input-qty { max-width: 45px; padding: 5px; font-size: 0.85rem; }
+            .total-container { flex-direction: column; gap: 10px; padding: 20px; text-align: center; }
+            .total-label { font-size: 1rem; }
+            .total-amount { font-size: 1.4rem; }
+            .btn-action { padding: 15px; font-size: 0.95rem; }
+            .close-modal { top: -40px; right: 10px; font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="mainNav">
+        <div class="container nav-inner">
+            <div class="logo">MUMMU</div>
+            <div class="nav-links">
+                <a onclick="jumpTo('intro')">소개</a>
+                <a onclick="jumpTo('portfolio')">포트폴리오</a>
+                <a onclick="jumpTo('gifdetail')">상세 리깅</a>
+                <a onclick="jumpTo('guidelines')">안내사항</a>
+                <a onclick="jumpTo('process')">작업과정</a>
+                <a onclick="jumpTo('options')">신청양식</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="intro">
+        <div class="container">
+            <img src="https://www.dropbox.com/scl/fi/m9kd32i8hdaz37qy8gzby/.webp?rlkey=p2v25goq8mm7dcxqmvrlyqort&st=e3184sn2&dl=1" class="profile-img" alt="멈무">
+            <div class="intro-text">
+                <h1>멈무 Mummu</h1>
+                <p>Live2D 리깅 전문 (버츄얼 / 월페이퍼)</p>
+                <p style="margin-top:20px; font-weight: 800; font-size: 1.1rem; color:#000;">꼼꼼하고 예쁘게 작업합니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 900; margin-bottom: 50px;">PORTFOLIO</h2>
+            <div class="category-tabs">
+                <button class="tab-btn active" onclick="setCategory('여캐')">여캐</button>
+                <button class="tab-btn" onclick="setCategory('남캐')">남캐</button>
+                <button class="tab-btn" onclick="setCategory('월페이퍼')">월페이퍼</button>
+            </div>
+
+            <div class="slider-outer">
+                <div class="swiper">
+                    <div class="swiper-wrapper" id="slider"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 새로 추가된 GIF Detail 섹션 -->
+    <section id="gifdetail">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 900; margin-bottom: 50px;">RIGGING DETAIL</h2>
+            <div id="gifDetailSkeleton" class="port-skeleton" style="display: none;">
+                <div class="skel-bar dark" style="height:220px;"></div>
+                <div class="skel-bar dark" style="height:220px;"></div>
+                <div class="skel-bar dark" style="height:220px;"></div>
+            </div>
+            <div id="gifDetailContainer" style="display: block;">
+                <!-- 데이터 로드 시 동적으로 삽입됨 -->
+            </div>
+        </div>
+    </section>
+
+    <section id="guidelines">
+        <div class="container">
+            <h2>안내사항 및 유의사항</h2>
+            <div class="guide-grid">
+                <div class="guide-box">
+                    <h3>🎨 파츠분리 검수</h3>
+                    <ul>
+                        <li>일러스트 제작은 진행하지 않습니다.</li>
+                        <li>파츠 분할 미흡 시 추가 요금이 발생할 수 있습니다.</li>
+                        <li>AI로 생성된 이미지는 작업하지 않습니다.</li>
+                    </ul>
+                </div>
+                <div class="guide-box">
+                    <h3>📦 작업물 제공 및 사용</h3>
+                    <ul>
+                        <li>모든 작업물은 포트폴리오 용도로 사용될 수 있습니다.</li>
+                        <li>결과물은 VTube Studio 대응 형식으로 제공됩니다.</li>
+                        <li>작업물 양도를 원하실 경우 사전에 연락주셔야 합니다.</li>
+                    </ul>
+                </div>
+                <div class="guide-box">
+                    <h3>💰 결제 및 예약</h3>
+                    <ul>
+                        <li>모든 작업은 완납 순으로 진행됩니다.</li>
+                        <li>작업 전 환불을 원하실 경우 최종 견적의 10% 위약금이 청구됩니다.</li>
+                        <li>아트머그 사이트 수수료(12%)가 포함된 금액입니다.</li>
+                    </ul>
+                </div>
+                <div class="guide-box">
+                    <h3>⏳ 기간 및 수정</h3>
+                    <ul>
+                        <li>작업 마감일은 안내드린 달의 말일(마지막 날)입니다.</li>
+                        <li>무상 보수는 3개월 이내 가능합니다.</li>
+                    </ul>
+                </div>
+                <div class="guide-box dark">
+                    <h3>🔔 기타 안내사항</h3>
+                    <ul>
+                        <li>웹캠 또는 아이폰 같은 페이셜 트래킹 장비가 필요합니다.</li>
+                        <li>Vbridger 사용 시 프로그램을 개별로 구매하셔야 합니다.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 60px;">작업 과정</h2>
+            <div class="process-flow">
+                <div class="process-item"><span class="step-icon">📝</span><span class="step-txt">문의</span></div>
+                <div class="process-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="process-item"><span class="step-icon">💰</span><span class="step-txt">견적</span></div>
+                <div class="process-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="process-item"><span class="step-icon">🔔</span><span class="step-txt">작업 시작</span></div>
+                <div class="process-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="process-item"><span class="step-icon">✅</span><span class="step-txt">컨펌 영상</span></div>
+                <div class="process-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="process-item"><span class="step-icon">🛠</span><span class="step-txt">수정 (2회)</span></div>
+                <div class="process-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="process-item"><span class="step-icon">📦</span><span class="step-txt">모델 전달</span></div>
+                <div class="process-arrow"><i class="fas fa-chevron-right"></i></div>
+                <div class="process-item"><span class="step-icon">⌨️</span><span class="step-txt">최종 셋팅</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="options">
+        <div class="container">
+            <div class="form-card">
+                <div class="step-header">
+                    <div class="step-tab active" id="tab1" onclick="showStep(1)">STEP 01. 견적 확인</div>
+                    <div class="step-tab" id="tab2" onclick="showStep(2)">STEP 02. 양식 작성</div>
+                </div>
+                
+                <div class="quote-content" id="step1">
+                    <div class="quote-category-nav" id="quoteCategoryNav"></div>
+                    <div class="quote-slider-wrap">
+                        <button class="quote-nav-btn q-prev" onclick="moveQuotePage(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <div id="quotePagesContainer" style="width: 100%;"></div>
+                        <button class="quote-nav-btn q-next" onclick="moveQuotePage(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="page-indicator" id="qPageNum">1 / 1</div>
+                    <div class="total-container">
+                        <div class="total-label">전체 견적 합계</div>
+                        <div class="total-amount" id="totalPriceDisplay">0 원</div>
+                    </div>
+                    <button class="btn-action" onclick="showStep(2)">위 견적으로 신청양식 작성하기 <i class="fas fa-chevron-right"></i></button>
+                </div>
+
+                <div class="form-content" id="step2" style="display: none;">
+                    <div class="form-grid">
+                        <div class="input-group"><label>닉네임 (모델명)</label><input type="text" placeholder="예: 멈무" id="f1"></div>
+                        <div class="input-group"><label>스트리밍 주소</label><input type="text" placeholder="트위치/유튜브 링크" id="f2"></div>
+                        <div class="input-group"><label>모델 성별</label><input type="text" placeholder="" id="f3"></div>
+                        <div class="input-group"><label>캐릭터 컨셉</label><input type="text" placeholder="설명 또는 외부 링크" id="f4"></div>
+                        <div class="input-group"><label>일러스트 작가님 연락처</label><input type="text" placeholder="아이디/닉네임" id="f5"></div>
+                        <div class="input-group"><label>리깅 공개 가능 일자</label><input type="text" placeholder="작업직후 / 데뷔후 등" id="f7"></div>
+                        <div class="input-group" style="grid-column: 1 / -1;"><label>추가 파츠 및 요청사항</label><textarea rows="3" placeholder="내용 작성" id="f6"></textarea></div>
+                        <div class="input-group" style="grid-column: 1 / -1;"><label>레퍼런스</label><input type="text" placeholder="영상 링크" id="f8"></div>
+                    </div>
+                    <button class="btn-action" onclick="copyAndInquiry()">견적서 + 신청양식으로 문의하기</button>
+                    <button style="width:100%; border:none; background:none; color:#888; cursor:pointer; margin-top:15px; text-decoration:underline;" onclick="showStep(1)">이전 단계로 돌아가기</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="videoModal">
+        <div class="modal-body">
+            <span class="close-modal" onclick="closeVideo()">&times;</span>
+            <iframe id="videoPlayer" width="100%" height="100%" src="" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        /* 수정됨: 네비게이션 클릭 시 부모 창에 위치 전달 */
+        function jumpTo(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                const elementTopInIframe = element.getBoundingClientRect().top + window.pageYOffset;
+                window.parent.postMessage({
+                    type: 'jump',
+                    targetTop: elementTopInIframe
+                }, '*');
+            }
+        }
+
+        /* --- Data Loading --- */
+        let portfolioData = {};
+        let pricingData = {};
+        let pricingCategories = [];
+        const csvPortfolioUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSGxdhKbapIk00JDPbuKHUqTZnoB9guECbsWQ3iESRjTg8Iqy78Gco731-3Y5f6hUMkg1jWqbVmIYz6/pub?gid=0&single=true&output=csv';
+        const csvPricingUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSGxdhKbapIk00JDPbuKHUqTZnoB9guECbsWQ3iESRjTg8Iqy78Gco731-3Y5f6hUMkg1jWqbVmIYz6/pub?gid=683062311&single=true&output=csv';
+        // GIF 리깅 상세 스프레드시트 CSV URL
+        const csvGifDetailUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfQvcx4v77SwWmdML0YHYCXxgK2XgI0IuXPnshKnsLP8EqL8gl5qagyx9DF-2r7yf-jgmvsTjkkdY7/pub?gid=49295584&single=true&output=csv';
+        
+        let swiperInstance = null;
+
+        async function loadDataFromCSV() {
+            try {
+                // 1. 포트폴리오 데이터 불러오기
+                const resP = await fetch(csvPortfolioUrl);
+                const textP = await resP.text();
+                Papa.parse(textP, {
+                    header: true, skipEmptyLines: true,
+                    complete: function(r) {
+                        r.data.forEach(item => {
+                            const cat = item['카테고리'] || '기타';
+                            if (!portfolioData[cat]) portfolioData[cat] = [];
+                            portfolioData[cat].push({ title: item['제목'], vid: item['아이디'], desc: item['설명'] });
+                        });
+                        setCategory('여캐');
+                    }
+                });
+
+                // 2. 견적 데이터 불러오기
+                const resQ = await fetch(csvPricingUrl);
+                const textQ = await resQ.text();
+                Papa.parse(textQ, {
+                    header: true, skipEmptyLines: true,
+                    complete: function(r) {
+                        const grouped = {};
+                        r.data.forEach(item => {
+                            let cat = item['카테고리'] || '기타';
+                            if (cat === '헤어 & 기타') cat = '헤어';
+                            if (!grouped[cat]) grouped[cat] = [];
+                            grouped[cat].push({ name: item['상품명'], desc: item['설명'], price: item['가격'] });
+                        });
+                        pricingData = grouped;
+                        pricingCategories = Object.keys(grouped);
+                        renderPricingUI();
+                    }
+                });
+
+                // 3. GIF Detail 데이터 불러오기 및 렌더링
+                loadGifDetailData();
+
+            } catch (error) { console.error(error); }
+        }
+
+        async function loadGifDetailData() {
+            const skeleton = document.getElementById('gifDetailSkeleton');
+            const container = document.getElementById('gifDetailContainer');
+            if (skeleton) skeleton.style.display = 'grid';
+
+            try {
+                const resG = await fetch(csvGifDetailUrl);
+                const textG = await resG.text();
+                
+                Papa.parse(textG, {
+                    header: true, skipEmptyLines: true,
+                    complete: function(r) {
+                        const grouped = {};
+                        r.data.forEach(item => {
+                            const cat = item['카테고리'] || item['그룹'] || '기타';
+                            if (!grouped[cat]) grouped[cat] = [];
+                            grouped[cat].push({
+                                title: item['제목'] || item['이름'] || '',
+                                desc: item['설명'] || '',
+                                imgUrl: item['이미지'] || item['이미지링크'] || item['URL'] || ''
+                            });
+                        });
+
+                        renderGifDetailUI(grouped);
+                        if (skeleton) skeleton.style.display = 'none';
+                        if (container) container.style.display = 'block';
+                    }
+                });
+            } catch (err) {
+                console.error("GIF 데이터를 가져오는 중 오류 발생:", err);
+                if (skeleton) skeleton.style.display = 'none';
+            }
+        }
+
+        function renderGifDetailUI(groupedData) {
+            const container = document.getElementById('gifDetailContainer');
+            if (!container) return;
+
+            let html = '';
+            for (const category in groupedData) {
+                const items = groupedData[category];
+                html += `
+                    <div class="gif-group">
+                        <div class="gif-subtitle">${category}</div>
+                        <div class="gif-grid">
+                `;
+                items.forEach(item => {
+                    const descFormatted = (item.desc || '').replace(/\n/g, '<br>');
+                    const imgHtml = item.imgUrl 
+                        ? `<img src="${item.imgUrl}" alt="${item.title}">` 
+                        : `GIF 영역`;
+
+                    html += `
+                        <div class="gif-card">
+                            <div class="gif-media">${imgHtml}</div>
+                            <div class="gif-desc">${item.title ? item.title + '<br>' : ''}${descFormatted}</div>
+                        </div>
+                    `;
+                });
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function setCategory(cat) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText === cat));
+            initSlider(cat);
+        }
+        function initSlider(cat) {
+            const listContainer = document.getElementById('slider');
+            const items = portfolioData[cat] || [];
+            if (swiperInstance) { swiperInstance.destroy(true, true); swiperInstance = null; }
+            if (items.length === 0) {
+                listContainer.innerHTML = '<p style="padding:50px; color:#555; text-align:center; width:100%;">해당 카테고리에 작업물이 없습니다.</p>';
+                return;
+            }
+            listContainer.innerHTML = items.map(item => `
+                <div class="swiper-slide">
+                    <div class="portfolio-card" onclick="openVideo('${item.vid}', this)">
+                        <div class="thumb-wrapper">
+                            <img src="https://img.youtube.com/vi/${item.vid}/mqdefault.jpg">
+                            <div class="play-overlay"><i class="fas fa-play"></i></div>
+                        </div>
+                        <div class="card-info">
+                            <h3>${item.title}</h3>
+                            <p>${item.desc || 'Live2D Rigging'}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            swiperInstance = new Swiper('.swiper', {
+                slidesPerView: 1, spaceBetween: 20, loop: items.length > 3,
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
+            });
+        }
+
+        let currentQuotePage = 0;
+        function renderPricingUI() {
+            const nav = document.getElementById('quoteCategoryNav');
+            const container = document.getElementById('quotePagesContainer');
+            nav.innerHTML = pricingCategories.map((cat, i) => `
+                <button class="q-cat-btn ${i === 0 ? 'active' : ''}" onclick="setQuotePage(${i})">${cat}</button>
+            `).join('');
+            container.innerHTML = pricingCategories.map((cat, i) => `
+                <div class="category-page ${i === 0 ? 'active' : ''}">
+                    <div class="table-head"><div>항목</div><div>단가</div><div>수량</div></div>
+                    ${pricingData[cat].map(item => {
+                        const isPriceNum = item.price && item.price.trim() !== "";
+                        const displayPrice = isPriceNum ? parseInt(item.price).toLocaleString() : "-";
+                        const rowPrice = isPriceNum ? item.price : "0";
+                        const inputDisabled = !isPriceNum ? "disabled style='opacity:0.3;'" : "";
+                        return `
+                        <div class="table-row" data-price="${rowPrice}">
+                            <div class="item-label-group">
+                                <span class="item-label">${item.name}</span>
+                                <span class="item-desc">${item.desc || '-'}</span>
+                            </div>
+                            <div class="item-price-tag">${displayPrice}</div>
+                            <div><input type="number" class="input-qty" value="0" min="0" oninput="calculateTotal()" ${inputDisabled}></div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            `).join('');
+            setQuotePage(0);
+        }
+
+        function setQuotePage(n) {
+            const pages = document.querySelectorAll('.category-page');
+            const btns = document.querySelectorAll('.q-cat-btn');
+            if (pages.length === 0) return;
+            pages[currentQuotePage].classList.remove('active');
+            btns[currentQuotePage].classList.remove('active');
+            currentQuotePage = n;
+            pages[currentQuotePage].classList.add('active');
+            btns[currentQuotePage].classList.add('active');
+            document.getElementById('qPageNum').innerText = (currentQuotePage + 1) + " / " + pricingCategories.length;
+        }
+
+        function moveQuotePage(dir) {
+            let next = currentQuotePage + dir;
+            if (next < 0) next = pricingCategories.length - 1;
+            if (next >= pricingCategories.length) next = 0;
+            setQuotePage(next);
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            document.querySelectorAll('.table-row').forEach(row => {
+                const price = parseInt(row.getAttribute('data-price')) || 0;
+                const qty = parseInt(row.querySelector('.input-qty').value) || 0;
+                total += (price * qty);
+            });
+            document.getElementById('totalPriceDisplay').innerText = total.toLocaleString() + " 원";
+        }
+
+        function showStep(n) {
+            document.getElementById('step1').style.display = n === 1 ? 'block' : 'none';
+            document.getElementById('step2').style.display = n === 2 ? 'block' : 'none';
+            document.getElementById('tab1').className = n === 1 ? 'step-tab active' : 'step-tab';
+            document.getElementById('tab2').className = n === 2 ? 'step-tab active' : 'step-tab';
+            setTimeout(sendHeightToParent, 50);
+        }
+
+        function copyAndInquiry() {
+            let text = "━━━━━━━━━━━━━━━━━━━━━━━━\n";
+            text += "[ Live2D 리깅 의뢰 상세 견적 ]\n";
+            text += "━━━━━━━━━━━━━━━━━━━━━━━━\n";
+
+            let hasItems = false;
+            document.querySelectorAll('.table-row').forEach(row => {
+                const label = row.querySelector('.item-label').innerText;
+                const qty = parseInt(row.querySelector('.input-qty').value) || 0;
+                const price = parseInt(row.getAttribute('data-price')) || 0;
+
+                if (qty > 0) {
+                    const subtotal = (price * qty).toLocaleString();
+                    text += `• ${label}: ${qty}개 (단가: ${price.toLocaleString()}원) → ${subtotal}원\n`;
+                    hasItems = true;
+                }
+            });
+
+            if (!hasItems) text += "선택된 상세 옵션이 없습니다.\n";
+
+            text += "────────────────────────\n";
+            text += `▶ 최종 합계: ${document.getElementById('totalPriceDisplay').innerText}\n`;
+            text += "━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+            text += "[ 신청인 양식 ]\n";
+            const inputs = document.querySelectorAll('#step2 input, #step2 textarea');
+            const labels = document.querySelectorAll('#step2 label');
+
+            inputs.forEach((input, i) => {
+                const labelText = labels[i] ? labels[i].innerText : "항목";
+                text += `• ${labelText}: ${input.value || '(미입력)'}\n`;
+            });
+
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            alert('견적서와 양식이 복사되었습니다!\n열리는 문의 창에 붙여넣기(Ctrl+V) 해주세요.');
+
+            const artmugInquiryUrl = 'https://artmug.kr/php/qna_write.php?number=57443';
+            window.open(artmugInquiryUrl, 'artmug_qna', 'width=1080,height=600,scrollbars=yes');
+        }
+
+        function openVideo(id, element) {
+            const modal = document.getElementById('videoModal');
+            const rect = element.getBoundingClientRect();
+            modal.style.top = (rect.top + window.pageYOffset - 40) + 'px';
+            document.getElementById('videoPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            modal.style.display = 'flex';
+        }
+        function closeVideo() { document.getElementById('videoModal').style.display = 'none'; document.getElementById('videoPlayer').src = ''; }
+
+        window.onload = loadDataFromCSV;
+        function sendHeightToParent() { window.parent.postMessage({ 'height': document.body.scrollHeight }, '*'); }
+        window.addEventListener('resize', sendHeightToParent);
+        new MutationObserver(sendHeightToParent).observe(document.body, { attributes: true, childList: true, subtree: true });
+
+        /* 수정됨: 네비게이션 추적 - 버벅임 최소화 */
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.type === 'scroll') {
+                const nav = document.getElementById('mainNav');
+                const relativeScroll = e.data.scrollY - e.data.offsetTop;
+                requestAnimationFrame(() => {
+                    nav.style.top = (relativeScroll > 0 ? relativeScroll : 0) + 'px';
+                });
+            }
+        }, false);
+    </script>
+</body>
+</html>
